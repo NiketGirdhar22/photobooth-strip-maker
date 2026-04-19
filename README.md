@@ -46,6 +46,7 @@ A full-stack web app that captures webcam photos and turns them into a classic p
 ```text
 photo-strip-app/
   client/
+  render.yaml
   server/
 ```
 
@@ -107,6 +108,27 @@ npm run start
 ```
 
 Serve frontend build from `client/dist` using your preferred static host.
+
+## Deploy on Render (Free)
+
+This repo includes a Render Blueprint file: `render.yaml`.
+
+### One-time setup
+
+1. Push this repo to GitHub (already done).
+2. In Render dashboard, click **New +** -> **Blueprint**.
+3. Connect `NiketGirdhar22/photobooth-strip-maker`.
+4. Render will detect and create:
+   - `photobooth-strip-api` (Node web service)
+   - `photobooth-strip-client` (static site)
+5. Click **Apply** to deploy both services.
+
+### Important note
+
+If you rename either Render service, update these env vars in Render:
+
+- Backend `CLIENT_ORIGIN` = your static site URL
+- Frontend `VITE_API_BASE_URL` = your backend URL
 
 ## API
 
