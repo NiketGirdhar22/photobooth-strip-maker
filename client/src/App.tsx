@@ -238,7 +238,13 @@ const App = () => {
       });
     } catch (error) {
       console.error(error);
-      setErrorMessage(error instanceof Error ? error.message : 'Strip generation failed.');
+      if (error instanceof TypeError) {
+        setErrorMessage(
+          'Cannot reach the API. Verify VITE_API_BASE_URL and backend CORS (CLIENT_ORIGIN) on Render.'
+        );
+      } else {
+        setErrorMessage(error instanceof Error ? error.message : 'Strip generation failed.');
+      }
     } finally {
       setIsGenerating(false);
     }

@@ -7,11 +7,34 @@ dotenv.config();
 
 const app = express();
 const port = Number(process.env.PORT) || 4000;
-const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
+const rawClientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
+const allowedOrigins = rawClientOrigin
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const isAllowedOrigin = (origin: string | undefined): boolean => {
+  if (!origin) {
+    return true;
+  }
+
+  if (allowedOrigins.includes('*')) {
+    return true;
+  }
+
+  return allowedOrigins.includes(origin);
+};
 
 app.use(
   cors({
-    origin: clientOrigin,
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${origin} is not allowed by CORS.`));
+    },
     credentials: false
   })
 );

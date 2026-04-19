@@ -127,7 +127,8 @@ This repo includes a Render Blueprint file: `render.yaml`.
 
 If you rename either Render service, update these env vars in Render:
 
-- Backend `CLIENT_ORIGIN` = your static site URL
+- Backend `CLIENT_ORIGIN` = `*` (quick fix) or comma-separated allowed origins
+  - Example: `https://photobooth.niketgirdhar.in,https://photobooth-strip-client.onrender.com`
 - Frontend `VITE_API_BASE_URL` = your backend URL
 
 ## API

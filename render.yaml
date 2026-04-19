@@ -10,7 +10,7 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: CLIENT_ORIGIN
-        value: https://photobooth-strip-client.onrender.com
+        value: "*"
 
   - type: web
     name: photobooth-strip-client
