@@ -5,7 +5,8 @@ import { CapturedPhotoCard } from './components/CapturedPhotoCard';
 import { LayoutSelector } from './components/LayoutSelector';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { useCamera } from './hooks/useCamera';
-import type { CapturedPhoto, FilterOption, LayoutOption } from './types';
+import type { CapturedPhoto, FilterOption, LayoutOption, StripFontOption } from './types';
+import { FONT_OPTIONS, STRIP_COLOR_PRESETS, getFontFamilyForOption } from './utils/stripStyles';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000';
 
@@ -76,6 +77,9 @@ const App = () => {
   const [layout, setLayout] = useState<LayoutOption>(3);
   const [photos, setPhotos] = useState<CapturedPhoto[]>([]);
   const [caption, setCaption] = useState('');
+  const [stripColor, setStripColor] = useState('#ffffff');
+  const [textFont, setTextFont] = useState<StripFontOption>('royal');
+  const [textSize, setTextSize] = useState(52);
   const [countdownEnabled, setCountdownEnabled] = useState(true);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -113,6 +117,7 @@ const App = () => {
   }, []);
 
   const stripFilename = useMemo(() => `photobooth-strip-${layout}x-${Date.now()}.png`, [layout]);
+  const selectedFontFamily = useMemo(() => getFontFamilyForOption(textFont), [textFont]);
 
   const clearGeneratedStrip = () => {
     setGeneratedStripUrl((previousUrl) => {
@@ -200,7 +205,10 @@ const App = () => {
           photos: photos.map((photo) => photo.dataUrl),
           filters: photos.map((photo) => photo.filter),
           text: caption,
-          layout
+          layout,
+          stripColor,
+          textFont,
+          textSize
         })
       });
 
@@ -326,6 +334,96 @@ const App = () => {
                 className="mt-2 w-full rounded-xl border border-white/10 bg-noir-950/80 px-3 py-2 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-500 focus:border-brass-300"
               />
             </label>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-[0.12em] text-zinc-300">Strip Background Color</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-noir-950/70 px-3 py-2 text-xs text-zinc-300">
+                  <input
+                    type="color"
+                    value={stripColor}
+                    onChange={(event) => {
+                      setStripColor(event.target.value);
+                      clearGeneratedStrip();
+                    }}
+                    className="h-8 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                    aria-label="Pick strip color"
+                  />
+                  Custom
+                </label>
+
+                <div className="flex flex-wrap gap-2">
+                  {STRIP_COLOR_PRESETS.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      aria-label={`Choose strip color ${color}`}
+                      onClick={() => {
+                        setStripColor(color);
+                        clearGeneratedStrip();
+                      }}
+                      className={`h-8 w-8 rounded-full border-2 transition ${
+                        stripColor.toLowerCase() === color
+                          ? 'border-brass-300 scale-105'
+                          : 'border-white/20 hover:border-white/45'
+                      }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <label className="block text-xs font-medium uppercase tracking-[0.12em] text-zinc-300">
+              Text Font Style
+              <select
+                value={textFont}
+                onChange={(event) => {
+                  setTextFont(event.target.value as StripFontOption);
+                  clearGeneratedStrip();
+                }}
+                className="mt-2 w-full rounded-xl border border-white/10 bg-noir-950/80 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-brass-300"
+              >
+                {FONT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-xs font-medium uppercase tracking-[0.12em] text-zinc-300">
+              Text Size
+              <div className="mt-2 flex items-center gap-3">
+                <input
+                  type="range"
+                  min={30}
+                  max={72}
+                  value={textSize}
+                  onChange={(event) => {
+                    setTextSize(Number(event.target.value));
+                    clearGeneratedStrip();
+                  }}
+                  className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/20 accent-brass-300"
+                />
+                <span className="min-w-[48px] text-right text-sm text-zinc-200">{textSize}px</span>
+              </div>
+            </label>
+
+            <div className="rounded-xl border border-white/10 bg-noir-950/70 px-3 py-3">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.13em] text-zinc-400">Text Preview</p>
+              <div
+                className="rounded-lg px-4 py-3 text-center leading-tight"
+                style={{
+                  backgroundColor: stripColor,
+                  color: stripColor.toLowerCase() === '#111111' ? '#f4f4f5' : '#161616',
+                  fontFamily: selectedFontFamily,
+                  fontSize: `${Math.max(18, Math.round(textSize * 0.45))}px`
+                }}
+              >
+                {caption.trim() || 'Your caption appears here'}
+              </div>
+            </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <ActionButton onClick={handleGenerateStrip} disabled={isGenerating || !isReadyToGenerate}>

@@ -12,11 +12,15 @@ A full-stack web app that captures webcam photos and turns them into a classic p
   - Vintage
   - Black & White
 - Flash animation + shutter sound on capture
+- Strip styling controls:
+  - Background color picker + quick palette
+  - 5 text font styles (aesthetic, royal, vintage, script, typewriter)
+  - Adjustable caption text size
 - Server-side strip generation with Sharp:
   - Fixed output width
   - Uniform image sizing
   - Equal spacing
-  - White border
+  - Configurable strip background
   - Bottom text tab (always preserved, optional text)
 - Download high-quality PNG
 - Responsive dark-theme UI
@@ -121,7 +125,10 @@ Request JSON:
   "photos": ["data:image/jpeg;base64,...", "..."],
   "filters": ["original", "vintage", "bw"],
   "text": "Best Day Ever",
-  "layout": 3
+  "layout": 3,
+  "stripColor": "#F8F2E6",
+  "textFont": "royal",
+  "textSize": 56
 }
 ```
 

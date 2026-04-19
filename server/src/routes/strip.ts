@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { generatePhotoStrip } from '../services/stripService';
-import type { FilterOption, GenerateStripPayload } from '../types';
+import type { FilterOption, GenerateStripPayload, StripFontOption } from '../types';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -34,11 +34,57 @@ const parseLayout = (layoutValue: unknown): 3 | 4 => {
   return layout;
 };
 
+const parseStripColor = (rawColor: unknown): string => {
+  const fallback = '#FFFFFF';
+  if (typeof rawColor !== 'string' || !rawColor.trim()) {
+    return fallback;
+  }
+
+  const color = rawColor.trim();
+  const hexColorRegex = /^#([0-9a-fA-F]{6})$/;
+  if (!hexColorRegex.test(color)) {
+    throw new Error('stripColor must be a valid 6-digit hex color like #FFFFFF.');
+  }
+
+  return color.toUpperCase();
+};
+
+const parseTextFont = (rawFont: unknown): StripFontOption => {
+  const fallback: StripFontOption = 'royal';
+  if (typeof rawFont !== 'string' || !rawFont.trim()) {
+    return fallback;
+  }
+
+  const validFonts: StripFontOption[] = ['aesthetic', 'royal', 'vintage', 'script', 'typewriter'];
+  if (!validFonts.includes(rawFont as StripFontOption)) {
+    throw new Error('textFont must be one of aesthetic, royal, vintage, script, typewriter.');
+  }
+
+  return rawFont as StripFontOption;
+};
+
+const parseTextSize = (rawTextSize: unknown): number => {
+  const fallback = 52;
+  if (rawTextSize === undefined || rawTextSize === null || rawTextSize === '') {
+    return fallback;
+  }
+
+  const textSize = Number(rawTextSize);
+  if (!Number.isFinite(textSize) || textSize < 30 || textSize > 72) {
+    throw new Error('textSize must be a number between 30 and 72.');
+  }
+
+  return Math.round(textSize);
+};
+
 const validatePayload = (body: Record<string, unknown>): GenerateStripPayload => {
   const photos = parseArrayField<string>(body.photos);
   const filters = parseArrayField<FilterOption>(body.filters);
   const layout = parseLayout(body.layout);
   const text = typeof body.text === 'string' ? body.text : '';
+  const stripColor = parseStripColor(body.stripColor);
+  const textFont = parseTextFont(body.textFont);
+  const textSize = parseTextSize(body.textSize);
 
   if (!photos.length) {
     throw new Error('Photos are required.');
@@ -62,7 +108,10 @@ const validatePayload = (body: Record<string, unknown>): GenerateStripPayload =>
     photos,
     filters,
     text,
-    layout
+    layout,
+    stripColor,
+    textFont,
+    textSize
   };
 };
 
