@@ -12,8 +12,9 @@ services:
       - key: CLIENT_ORIGIN
         value: https://photobooth-strip-client.onrender.com
 
-  - type: static
+  - type: web
     name: photobooth-strip-client
+    runtime: static
     rootDir: client
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
