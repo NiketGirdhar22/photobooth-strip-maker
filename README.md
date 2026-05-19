@@ -5,6 +5,7 @@ A full-stack web app that captures webcam photos and turns them into a classic p
 ## Features
 
 - Webcam live preview via MediaDevices API
+- 16:9 camera viewport and 16:9 strip photo frames
 - Optional 3-second capture countdown
 - Choose strip layout: 3 or 4 photos
 - Per-photo effects:

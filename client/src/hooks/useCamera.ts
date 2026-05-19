@@ -4,6 +4,7 @@ const CAMERA_CONSTRAINTS: MediaStreamConstraints = {
   audio: false,
   video: {
     facingMode: 'user',
+    aspectRatio: { ideal: 16 / 9 },
     width: { ideal: 1280 },
     height: { ideal: 720 }
   }

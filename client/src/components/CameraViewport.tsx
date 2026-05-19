@@ -15,13 +15,13 @@ export const CameraViewport = ({
 }: CameraViewportProps) => {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black shadow-glow">
-      <div className="relative aspect-[4/3] w-full">
+      <div className="relative aspect-[16/9] w-full bg-black">
         <video
           ref={videoRef}
           autoPlay
           muted
           playsInline
-          className="h-full w-full scale-x-[-1] object-cover"
+          className="h-full w-full scale-x-[-1] object-contain"
         />
 
         {!isCameraActive && (

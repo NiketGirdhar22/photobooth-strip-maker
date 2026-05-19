@@ -1,8 +1,8 @@
 import sharp from 'sharp';
 import type { FilterOption, GenerateStripPayload, StripFontOption } from '../types';
 
-const PHOTO_WIDTH = 900;
-const PHOTO_HEIGHT = 1100;
+const PHOTO_WIDTH = 960;
+const PHOTO_HEIGHT = 540;
 const OUTER_BORDER = 44;
 const SPACING = 30;
 const TAB_HEIGHT = 180;
@@ -127,13 +127,18 @@ const applyFilter = (pipeline: sharp.Sharp, filter: FilterOption): sharp.Sharp =
   }
 };
 
-const processPhoto = async (base64Photo: string, filter: FilterOption): Promise<Buffer> => {
+const processPhoto = async (
+  base64Photo: string,
+  filter: FilterOption,
+  stripColor: string
+): Promise<Buffer> => {
   const input = decodePhoto(base64Photo);
 
   const filtered = await applyFilter(
     sharp(input).rotate().resize(PHOTO_WIDTH, PHOTO_HEIGHT, {
-      fit: 'cover',
-      position: 'attention'
+      fit: 'contain',
+      position: 'center',
+      background: stripColor
     }),
     filter
   )
@@ -194,7 +199,7 @@ export const generatePhotoStrip = async (payload: GenerateStripPayload): Promise
   const processedPhotos = await Promise.all(
     photos.map((photo, index) => {
       const filter = filters[index] ?? 'original';
-      return processPhoto(photo, filter);
+      return processPhoto(photo, filter, stripColor);
     })
   );
 

@@ -14,7 +14,7 @@ export const CapturedPhotoCard = ({ photo, index, onFilterChange }: CapturedPhot
         <img
           src={photo.dataUrl}
           alt={`Captured ${index + 1}`}
-          className="aspect-[4/5] w-full object-cover"
+          className="aspect-[16/9] w-full bg-black object-contain"
           style={{ filter: getPreviewFilterStyle(photo.filter) }}
         />
         <span className="absolute left-2 top-2 rounded-md bg-noir-950/80 px-2 py-1 text-xs font-semibold text-zinc-100">
